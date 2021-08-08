@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="uopeople_primary">#1f0a2f</color>
+    <color name="uopeople_primary_variant">#4d015c</color>
+    <color name="uopeople_secondary">#4b345e</color>
+    <color name="uopeople_tertiary">#ff007a</color>
 </resources>
