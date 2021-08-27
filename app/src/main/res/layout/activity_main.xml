@@ -110,14 +110,18 @@
                         android:layout_height="70dp"
                         android:layout_margin="10dp"
                         android:padding="10dp"
-                        android:text="button" />
+                        android:text="Take Notes"
+                        android:textAllCaps="false"
+                        android:onClick="openNotesActivity"/>
 
                     <Button
                         android:layout_width="150dp"
                         android:layout_height="70dp"
                         android:layout_margin="10dp"
                         android:padding="10dp"
-                        android:text="button" />
+                        android:text="Feedback"
+                        android:textAllCaps="false"
+                        android:onClick="openGooglePlay"/>
 
                 </LinearLayout>
 
@@ -132,14 +136,57 @@
                         android:layout_height="70dp"
                         android:layout_margin="10dp"
                         android:padding="10dp"
-                        android:text="button" />
+                        android:text="Social Medias"
+                        android:textAllCaps="false"
+                        android:onClick="toggleSocialMediaLayout"/>
 
                     <Button
                         android:layout_width="150dp"
                         android:layout_height="70dp"
                         android:layout_margin="10dp"
                         android:padding="10dp"
-                        android:text="button" />
+                        android:text="Report Bug"
+                        android:textAllCaps="false"
+                        android:onClick="openGithubIssue"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/social_medias"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:background="@color/uopeople_tertiary"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:padding="10dp">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yammer"
+                        android:layout_margin="3dp"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+                        android:onClick="openYammer"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Signal"
+                        android:layout_margin="3dp"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+                        android:onClick="openSignal"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Discord"
+                        android:layout_margin="3dp"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+                        android:onClick="openDiscord"/>
 
                 </LinearLayout>
 
@@ -151,7 +198,7 @@
                     android:layout_marginVertical="20dp"
                     android:fontFamily="@font/roboto_mono_light"
                     android:gravity="center"
-                    android:onClick="contribute_btn"
+                    android:onClick="startContributeActivity"
                     android:text="Contribute"
                     android:textColor="@color/white"
                     android:textStyle="bold" />
@@ -164,7 +211,7 @@
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/roboto_mono_light"
                     android:gravity="center"
-                    android:onClick="contribute_btn"
+                    android:onClick="license"
                     android:text="Licenses"
                     android:textColor="@color/white"
                     android:textStyle="bold" />

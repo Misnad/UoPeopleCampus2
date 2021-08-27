@@ -18,11 +18,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -30,13 +32,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 public class MainActivity extends AppCompatActivity {
 
     WebView moodle;
     LinearLayout mainToolView, bottomBar;
     Button homeBtn, dashBtn, fullSrnBtn, gradeBtn, msgBtn;
     boolean toolsTouched, toolsViewRaised;
-    int a,b;    // for mainToolView raising mechanism
+    int a, b;    // for mainToolView raising mechanism
 
     float dpi, ydpi;
     int width, height;
@@ -47,11 +51,18 @@ public class MainActivity extends AppCompatActivity {
     NotificationCompat.Builder builder;
 
 
-    LinearLayout contributeLin;
-    int contributeLinHeight;
+    private static class MyBrowser extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//            view.loadUrl(url);
+            // TODO test below code
+            return Uri.parse(url).getHost().equals("uopeople.edu");
+        }
+    }
 
-    @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
+
     @Override
+    @SuppressLint({"SetJavaScriptEnabled", "ClickableViewAccessibility"})
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -74,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         msgBtn = findViewById(R.id.msgBtn);
 
         // webView height
-        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height-180*(ydpi/283)) ));
+        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 180 * (ydpi / 283))));
 
         // webView settings
         moodle.setWebViewClient(new MyBrowser());
@@ -98,39 +109,38 @@ public class MainActivity extends AppCompatActivity {
         setUoPeopleMediaLinks();
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
 
         int Y;
-        switch(action) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
                 Y = (int) event.getRawY();
                 a = Y;
                 b = moodle.getHeight();
 
-                int[] ords = {0,0};
+                int[] ords = {0, 0};
                 mainToolView.getLocationOnScreen(ords);
                 int absoluteTop = ords[1];
                 int absoluteBottom = ords[1] + mainToolView.getHeight();
-                if (absoluteTop<Y && Y<absoluteBottom) {
+                if (absoluteTop < Y && Y < absoluteBottom) {
                     toolsTouched = true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 Y = (int) event.getRawY();
                 if (toolsTouched) {
-                    slideView(moodle, moodle.getLayoutParams().height, b-(a-Y));
+                    slideView(moodle, moodle.getLayoutParams().height, b - (a - Y));
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 Y = (int) event.getRawY();
-                if (Y < a-100 && !toolsViewRaised) {
+                if (Y < a - 100 && !toolsViewRaised) {
                     // raise toolsView
                     slideView(moodle, moodle.getLayoutParams().height, 10);
                     toolsViewRaised = true;
-                } else if (Y > a+100 && toolsViewRaised) {
+                } else if (Y > a + 100 && toolsViewRaised) {
                     // minimize toolsView
                     setMoodleHeightToDefault();
                     toolsViewRaised = false;
@@ -142,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setMoodleHeightToDefault() {
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height-180*(ydpi/283)));
+        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
     }
 
     private void enterFullSrn() {
@@ -162,28 +172,31 @@ public class MainActivity extends AppCompatActivity {
 
         showSystemUI();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height-180*(ydpi/283)) );
+        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
     }
 
-    public void contribute_btn(View view) {
-        if (contributeLin.getHeight() == 0) {
-            slideView(contributeLin, 0, contributeLinHeight);
-        } else {
-            slideView(contributeLin, contributeLin.getLayoutParams().height, 0);
-        }
+    private void hideSystemUI() {
+        // Enables regular immersive mode.
+        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
+        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        // Set the content to appear under the system bars so that the
+                        // content doesn't resize when the system bars hide and show.
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    public void shareApp(View view) {
-        // TODO implement
-    }
-
-    private static class MyBrowser extends WebViewClient {
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//            view.loadUrl(url);
-            // TODO test below code
-            return Uri.parse(url).getHost().equals("uopeople.edu");
-        }
+    private void showSystemUI() {
+        // Shows the system bars by removing all the flags
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
     public static void slideView(View view, int currentHeight, int newHeight) {
@@ -248,38 +261,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void hideSystemUI() {
-        // Enables regular immersive mode.
-        // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
-        // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        // Hide the nav bar and status bar
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
-    }
-
-    private void showSystemUI() {
-        // Shows the system bars by removing all the flags
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-    }
-
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         exitFullSrn();
-    }
-
-    private float dpToPixel(float dp) {
-        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
-        return dp * (metrics.densityDpi/160f);
     }
 
     @Override
@@ -287,6 +271,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancelAll();
+    }
+
+    private float dpToPixel(float dp) {
+        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
+        return dp * (metrics.densityDpi / 160f);
     }
 
     public void setUoPeopleMediaLinks() {
@@ -315,5 +304,67 @@ public class MainActivity extends AppCompatActivity {
         linkedin.setOnClickListener(mediaLinkListener);
         youtube.setOnClickListener(mediaLinkListener);
         instagram.setOnClickListener(mediaLinkListener);
+    }
+
+    public void startContributeActivity(View view) {
+        startActivity(new Intent(this, ContributeActivity.class));
+    }
+
+    public void license(View view) {
+        moodle.loadUrl("https://raw.githubusercontent.com/Misnad/UoPeopleCampus2/master/LICENSE");
+        setMoodleHeightToDefault();
+    }
+
+    public void shareApp(View view) {
+        try {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "UoPeople Campus 2");
+            String shareMessage = "\nTry this open-source UoPeople Moodle app\n\n";
+            shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+            startActivity(Intent.createChooser(shareIntent, "choose share app"));
+        } catch (Exception e) {
+            Log.e("", e.toString());
+        }
+    }
+
+    public void openGithubIssue(View view) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Misnad/UoPeopleCampus2/issues")));
+    }
+
+    public void openNotesActivity(View view) {
+        Snackbar.make(mainToolView, "Coming Soon", Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void openGooglePlay(View view) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)));
+    }
+
+    boolean socialMediaLayoutMaximised;
+
+    public void toggleSocialMediaLayout(View view) {
+        LinearLayout lin = findViewById(R.id.social_medias);
+        if (socialMediaLayoutMaximised) {
+            // minimize SocialMediaLayout
+            slideView(lin, lin.getHeight(), 0);
+            socialMediaLayoutMaximised = false;
+        } else {
+            // maximize SocialMediaLayout
+            slideView(lin, lin.getHeight(), (int) dpToPixel(80));
+            socialMediaLayoutMaximised = true;
+        }
+    }
+
+    public void openYammer(View v) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.yammer.com/uopeoplewelcome/#/home")));
+    }
+
+    public void openSignal(View v) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://signal.group/#CjQKIK6JFjw6f7IYGGYS7amJA_qBGvhodgM9f4i_XQY678chEhBqyKgdr0Vmal84X0MnRqMS")));
+    }
+
+    public void openDiscord(View v) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/85YETdMC")));
     }
 }

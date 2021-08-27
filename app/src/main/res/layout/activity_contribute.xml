@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ContributeActivity">
+
+    <LinearLayout
+        android:id="@+id/contribute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="60dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UoPeopleCampus 2"
+            android:fontFamily="@font/roboto_mono_medium"
+            android:textSize="20sp"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about_app"
+            android:fontFamily="@font/roboto_mono_light"
+            android:padding="20dp"
+            android:gravity="center" />
+
+        <Button
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:text="GitHub"
+            android:textAllCaps="false"
+            android:fontFamily="@font/roboto_mono_medium"
+            android:textColor="@color/white"
+            android:layout_marginHorizontal="30dp"
+            android:backgroundTint="@color/uopeople_tertiary"
+            android:onClick="openGithubRepo"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginVertical="10dp">
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="60dp"
+                android:text="Donate"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_mono_light"
+                android:textAllCaps="false"
+                android:layout_marginHorizontal="10dp"
+                android:onClick="donate"/>
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="60dp"
+                android:text="Share"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_mono_light"
+                android:textAllCaps="false"
+                android:layout_marginHorizontal="10dp"
+                android:onClick="shareApp"/>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:text="Rate App on PlayStore"
+            android:textAllCaps="false"
+            android:fontFamily="@font/roboto_mono_light"
+            android:textColor="@color/white"
+            android:layout_marginHorizontal="30dp"
+            android:onClick="rateAppOnPlayStore"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contributors"
+            android:gravity="center"
+            android:fontFamily="@font/roboto_mono_medium"
+            android:textSize="15sp"
+            android:layout_marginTop="40dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/contributors"
+            android:fontFamily="@font/roboto_mono_light"
+            android:padding="20dp"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</ScrollView>
