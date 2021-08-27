@@ -33,6 +33,14 @@
             android:padding="0px"
             android:scaleType="centerCrop" />
 
+        <TextView
+            android:id="@+id/swipe_up_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_mono_light"
+            android:gravity="center"
+            android:text="Swipe Up here to open menu\n Swipe down to close" />
+
         <LinearLayout
             android:id="@+id/bottomBar"
             android:layout_width="match_parent"

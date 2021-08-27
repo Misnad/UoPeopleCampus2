@@ -13,10 +13,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,11 +32,14 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
+
+    SharedPreferences sharedPreferences;
 
     WebView moodle;
     LinearLayout mainToolView, bottomBar;
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // getting screen size and density
         dpi = getResources().getDisplayMetrics().densityDpi;
@@ -107,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
 
         // set onClick listeners for media links
         setUoPeopleMediaLinks();
+
+        // hide SwipeUpText
+        if (sharedPreferences.getBoolean("SwipeUpTextHidden", false)) {
+            hideSwipeUpText();
+        }
     }
 
     @Override
@@ -136,11 +148,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case MotionEvent.ACTION_UP:
                 Y = (int) event.getRawY();
-                if (Y < a - 100 && !toolsViewRaised) {
+                if (Y < a - 50 && !toolsViewRaised) {
                     // raise toolsView
                     slideView(moodle, moodle.getLayoutParams().height, 10);
                     toolsViewRaised = true;
-                } else if (Y > a + 100 && toolsViewRaised) {
+                    hideSwipeUpText();
+                } else if (Y > a + 50 && toolsViewRaised) {
                     // minimize toolsView
                     setMoodleHeightToDefault();
                     toolsViewRaised = false;
@@ -149,6 +162,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    TextView swipeUpText;
+    public void hideSwipeUpText() {
+        swipeUpText = findViewById(R.id.swipe_up_text);
+        slideView(swipeUpText, swipeUpText.getHeight(), 0);
+        sharedPreferences.edit().putBoolean("SwipeUpTextHidden", true).apply();
     }
 
     private void setMoodleHeightToDefault() {
