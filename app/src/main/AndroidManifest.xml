@@ -21,7 +21,8 @@
 
         <activity
             android:name=".SettingsActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.SettingsTheme"/>
         <activity
             android:name=".ContributeActivity"
             android:exported="true" />

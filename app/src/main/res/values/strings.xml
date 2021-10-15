@@ -2,4 +2,9 @@
     <string name="app_name">UoPeople Campus 2</string>
     <string name="about_app">UoPeople Campus 2 is a free and open-source project that act as a portal to the UoPeople Moodle site. Anyone can edit/modify and redistribute the app with the same GPL-v3 or any GPL-v3 compatible licence.\n Thanks for using the App.</string>
     <string name="contributors">: )</string>
+    <string name="ad_setting">
+        This open-source app shows ads to fund the development of the project.
+        To not annoy our users, Ads are limited to maximum of two ads per hour.
+        If you are still annoyed or want no ads to be shown, you can turn it off below.
+    </string>
 </resources>

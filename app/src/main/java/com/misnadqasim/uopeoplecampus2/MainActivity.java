@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAd() {
-        if (mInterstitialAd != null) {
+        if (mInterstitialAd != null && sharedPreferences.getBoolean("SHOW_AD", true)) {
 
             mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
                 @Override
