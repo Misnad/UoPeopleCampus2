@@ -16,11 +16,6 @@
 <!--</resources>-->
 
 
-
-
-
-
-
 <!--Temporary theme until light theme is fixed-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
@@ -38,4 +33,13 @@
         <item name="android:statusBarColor" tools:targetApi="l">@color/uopeople_primary</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.UoPeopleCampus2.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.UoPeopleCampus2.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.UoPeopleCampus2.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

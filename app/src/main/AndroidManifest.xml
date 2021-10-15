@@ -13,6 +13,15 @@
         android:theme="@style/Theme.UoPeopleCampus2"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+
+        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true" />
         <activity
             android:name=".ContributeActivity"
             android:exported="true" />

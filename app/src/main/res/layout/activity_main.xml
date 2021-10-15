@@ -28,7 +28,8 @@
             android:layout_width="200dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="5dp"
             android:background="@drawable/horizontal_bar"
             android:padding="0px"
             android:scaleType="centerCrop" />
@@ -139,14 +140,22 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
+<!--                    <Button-->
+<!--                        android:layout_width="150dp"-->
+<!--                        android:layout_height="70dp"-->
+<!--                        android:layout_margin="10dp"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:text="Social Medias"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:onClick="toggleSocialMediaLayout"/>-->
                     <Button
                         android:layout_width="150dp"
                         android:layout_height="70dp"
                         android:layout_margin="10dp"
                         android:padding="10dp"
-                        android:text="Social Medias"
+                        android:text="Settings"
                         android:textAllCaps="false"
-                        android:onClick="toggleSocialMediaLayout"/>
+                        android:onClick="settings"/>
 
                     <Button
                         android:layout_width="150dp"
@@ -159,44 +168,44 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/social_medias"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="horizontal"
-                    android:background="@color/uopeople_tertiary"
-                    android:gravity="center"
-                    android:layout_margin="10dp"
-                    android:padding="10dp">
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/social_medias"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:background="@color/uopeople_tertiary"-->
+<!--                    android:gravity="center"-->
+<!--                    android:layout_margin="10dp"-->
+<!--                    android:padding="10dp">-->
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Yammer"
-                        android:layout_margin="3dp"
-                        android:textColor="@color/white"
-                        android:textAllCaps="false"
-                        android:onClick="openYammer"/>
+<!--                    <Button-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Yammer"-->
+<!--                        android:layout_margin="3dp"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:onClick="openYammer"/>-->
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Signal"
-                        android:layout_margin="3dp"
-                        android:textColor="@color/white"
-                        android:textAllCaps="false"
-                        android:onClick="openSignal"/>
+<!--                    <Button-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Signal"-->
+<!--                        android:layout_margin="3dp"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:onClick="openSignal"/>-->
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Discord"
-                        android:layout_margin="3dp"
-                        android:textColor="@color/white"
-                        android:textAllCaps="false"
-                        android:onClick="openDiscord"/>
+<!--                    <Button-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Discord"-->
+<!--                        android:layout_margin="3dp"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:onClick="openDiscord"/>-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
 
                 <Button
                     android:layout_width="match_parent"

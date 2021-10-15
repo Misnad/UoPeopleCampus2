@@ -42,7 +42,7 @@ public class ContributeActivity extends AppCompatActivity {
     }
 
     public void donate(View view) {
-        Snackbar.make(findViewById(R.id.contribute), "Thanks for your intention to help. We don't accept donations now. You can donate by improving the app or by sharing the app.", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.contribute), "Thanks :) But we don't accept donations now. Instead you can share this app with your friends.", Snackbar.LENGTH_LONG).show();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.misnadqasim.uopeoplecampus2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationCompat;
@@ -14,7 +15,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.Image;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -35,6 +35,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
     String CHANNEL_ID = "1";
     int FULLSCREEN_NOTIFICATION_ID = 31231;
     NotificationCompat.Builder builder;
+
+
+    public void settings(View view) {
+        startActivity(new Intent(this, SettingsActivity.class));
+    }
 
 
     private static class MyBrowser extends WebViewClient {
@@ -92,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
         msgBtn = findViewById(R.id.msgBtn);
 
         // webView height
-        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 180 * (ydpi / 283))));
+//        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 180 * (ydpi / 283))));
+//        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 160 * (ydpi / 283))));
+//        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - (dpToPixel(90) + getNavigationBarHeight())) ));
+        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - dpToPixel(95) )));
+
 
         // webView settings
         moodle.setWebViewClient(new MyBrowser());
@@ -119,7 +137,82 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPreferences.getBoolean("SwipeUpTextHidden", false)) {
             hideSwipeUpText();
         }
+
+        //AdMob
+        adMob();
+        moodle.setOnTouchListener((v, event) -> {
+            showAd();
+            return false;
+        });
     }
+
+    private InterstitialAd mInterstitialAd;
+
+    private void adMob() {
+        // initialize AdMob
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        loadAd();
+    }
+
+    private void loadAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                        Log.i("TAG", "adLoaded");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        Log.i("TAG", loadAdError.getMessage());
+                        mInterstitialAd = null;
+                    }
+                });
+    }
+
+    private void showAd() {
+        if (mInterstitialAd != null) {
+
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    // Called when fullscreen content is dismissed.
+                    Log.d("TAG", "The ad was dismissed.");
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                    // Called when fullscreen content failed to show.
+                    Log.d("TAG", "The ad failed to show.");
+                }
+
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    // Called when fullscreen content is shown.
+                    // Make sure to set your reference to null so you don't
+                    // show it a second time.
+                    mInterstitialAd = null;
+                    Log.d("TAG", "The ad was shown.");
+                    loadAd();
+                }
+            });
+
+            mInterstitialAd.show(this);
+        }
+    }
+
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -161,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
                 toolsTouched = false;
                 break;
         }
+
         return true;
     }
 
@@ -171,8 +265,21 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences.edit().putBoolean("SwipeUpTextHidden", true).apply();
     }
 
+    private int getNavigationBarHeight() {
+        Resources resources = this.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
     private void setMoodleHeightToDefault() {
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
+        Log.d("TAG", " " + ydpi);
+//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
+//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 160 * (ydpi / 283)));
+//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( dpToPixel(90) + getNavigationBarHeight() ) ));
+        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( dpToPixel(95)  ) ));
     }
 
     private void enterFullSrn() {
@@ -354,6 +461,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openNotesActivity(View view) {
+        showAd();
         Snackbar.make(mainToolView, "Coming Soon", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -363,28 +471,17 @@ public class MainActivity extends AppCompatActivity {
 
     boolean socialMediaLayoutMaximised;
 
-    public void toggleSocialMediaLayout(View view) {
-        LinearLayout lin = findViewById(R.id.social_medias);
-        if (socialMediaLayoutMaximised) {
-            // minimize SocialMediaLayout
-            slideView(lin, lin.getHeight(), 0);
-            socialMediaLayoutMaximised = false;
-        } else {
-            // maximize SocialMediaLayout
-            slideView(lin, lin.getHeight(), (int) dpToPixel(80));
-            socialMediaLayoutMaximised = true;
-        }
-    }
+//    public void toggleSocialMediaLayout(View view) {
+//        LinearLayout lin = findViewById(R.id.social_medias);
+//        if (socialMediaLayoutMaximised) {
+//            // minimize SocialMediaLayout
+//            slideView(lin, lin.getHeight(), 0);
+//            socialMediaLayoutMaximised = false;
+//        } else {
+//            // maximize SocialMediaLayout
+//            slideView(lin, lin.getHeight(), (int) dpToPixel(80));
+//            socialMediaLayoutMaximised = true;
+//        }
+//    }
 
-    public void openYammer(View v) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.yammer.com/uopeoplewelcome/#/home")));
-    }
-
-    public void openSignal(View v) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://signal.group/#CjQKIK6JFjw6f7IYGGYS7amJA_qBGvhodgM9f4i_XQY678chEhBqyKgdr0Vmal84X0MnRqMS")));
-    }
-
-    public void openDiscord(View v) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/85YETdMC")));
-    }
 }
