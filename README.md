@@ -1,13 +1,31 @@
 # UoPeopleCampus2
 UoPeople Moodle Portal Community Project | University Of the People
 
-UoPeopleCampus2 is a free and open-source android app to provide access to your online campus easily at University Of the People. The app implements a web-view to display the UoPeople moodle site.
+### Overview
+UoPeopleCampus2 is a free and open android app to access you online campus easily. The app implements a web-view to display the UoPeople moodle site.
 It provides additional features like Note taking and easy access to UoPeople catalog and other useful links.
+
+For any bug reports or suggestions open an issue.
+
+### Installation
 
 <a href='https://play.google.com/store/apps/details?id=com.misnadqasim.uopeoplecampus2&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
   <img height="100px" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>
 </a>
 
-For any bug reports or suggestions please open an issue.
+Or download apk from [here](https://github.com/Misnad/UoPeopleCampus2/releases/download/v1.0.0/app-debug.apk)
 
-_The development of this project has been discontinued by the creator_
+### Features
+
+- Display the UoPeople moodle site in a web-view
+- Full screen mode for better reading experience
+- Note taking
+- Easy access to UoPeople catalog and other useful links
+
+### More
+
+Fonts from [Google Fonts](fonts.google.com)
+
+
+_The development of this project is discontinued by the creator_
+I might come back to this porject later if enough intrest is shown by users.
