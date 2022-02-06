@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         msgBtn = findViewById(R.id.msgBtn);
 
         // webView height
-        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 180 * (ydpi / 283))));
+        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - ( (2/3)*ydpi) )));
 
         // webView settings
         moodle.setWebViewClient(new MyBrowser());
