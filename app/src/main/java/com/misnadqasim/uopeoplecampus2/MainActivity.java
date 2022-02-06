@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setMoodleHeightToDefault() {
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
+        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( (2/3)*ydpi) ));
     }
 
     private void enterFullSrn() {
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
         showSystemUI();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
+        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( (2/3)*ydpi) ));
     }
 
     private void hideSystemUI() {
