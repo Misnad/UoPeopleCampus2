@@ -133,85 +133,9 @@ public class MainActivity extends AppCompatActivity {
         // set onClick listeners for media links
         setUoPeopleMediaLinks();
 
-        // hide SwipeUpText
-        if (sharedPreferences.getBoolean("SwipeUpTextHidden", false)) {
-            hideSwipeUpText();
-        }
 
-        //AdMob
-        adMob();
-        moodle.setOnTouchListener((v, event) -> {
-            showAd();
-            return false;
-        });
+
     }
-
-    private InterstitialAd mInterstitialAd;
-
-    private void adMob() {
-        // initialize AdMob
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
-
-        loadAd();
-    }
-
-    private void loadAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest,
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        // The mInterstitialAd reference will be null until
-                        // an ad is loaded.
-                        mInterstitialAd = interstitialAd;
-                        Log.i("TAG", "adLoaded");
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.i("TAG", loadAdError.getMessage());
-                        mInterstitialAd = null;
-                    }
-                });
-    }
-
-    private void showAd() {
-        if (mInterstitialAd != null && sharedPreferences.getBoolean("SHOW_AD", true)) {
-
-            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
-                @Override
-                public void onAdDismissedFullScreenContent() {
-                    // Called when fullscreen content is dismissed.
-                    Log.d("TAG", "The ad was dismissed.");
-                }
-
-                @Override
-                public void onAdFailedToShowFullScreenContent(AdError adError) {
-                    // Called when fullscreen content failed to show.
-                    Log.d("TAG", "The ad failed to show.");
-                }
-
-                @Override
-                public void onAdShowedFullScreenContent() {
-                    // Called when fullscreen content is shown.
-                    // Make sure to set your reference to null so you don't
-                    // show it a second time.
-                    mInterstitialAd = null;
-                    Log.d("TAG", "The ad was shown.");
-                    loadAd();
-                }
-            });
-
-            mInterstitialAd.show(this);
-        }
-    }
-
 
 
     @Override
@@ -245,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                     // raise toolsView
                     slideView(moodle, moodle.getLayoutParams().height, 10);
                     toolsViewRaised = true;
-                    hideSwipeUpText();
                 } else if (Y > a + 50 && toolsViewRaised) {
                     // minimize toolsView
                     setMoodleHeightToDefault();
@@ -256,13 +179,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-    TextView swipeUpText;
-    public void hideSwipeUpText() {
-        swipeUpText = findViewById(R.id.swipe_up_text);
-        slideView(swipeUpText, swipeUpText.getHeight(), 0);
-        sharedPreferences.edit().putBoolean("SwipeUpTextHidden", true).apply();
     }
 
     private int getNavigationBarHeight() {
@@ -461,7 +377,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openNotesActivity(View view) {
-        showAd();
         Snackbar.make(mainToolView, "Coming Soon", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -469,19 +384,5 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)));
     }
 
-    boolean socialMediaLayoutMaximised;
-
-//    public void toggleSocialMediaLayout(View view) {
-//        LinearLayout lin = findViewById(R.id.social_medias);
-//        if (socialMediaLayoutMaximised) {
-//            // minimize SocialMediaLayout
-//            slideView(lin, lin.getHeight(), 0);
-//            socialMediaLayoutMaximised = false;
-//        } else {
-//            // maximize SocialMediaLayout
-//            slideView(lin, lin.getHeight(), (int) dpToPixel(80));
-//            socialMediaLayoutMaximised = true;
-//        }
-//    }
 
 }
