@@ -1,6 +1,5 @@
 package com.misnadqasim.uopeoplecampus2;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationCompat;
@@ -25,6 +24,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.webkit.WebView;
@@ -32,18 +32,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
@@ -53,21 +43,18 @@ public class MainActivity extends AppCompatActivity {
     WebView moodle;
     LinearLayout mainToolView, bottomBar;
     Button homeBtn, dashBtn, fullSrnBtn, gradeBtn, msgBtn;
-    boolean toolsTouched, toolsViewRaised;
-    int a, b;    // for mainToolView raising mechanism
+    int Y, a;   // for mainToolView raising mechanism
 
-    float dpi, ydpi;
     int width, height;
 
+    int bottom_nav_height;
+    int screen_height;
+
+    String TAG = "a";
 
     String CHANNEL_ID = "1";
     int FULLSCREEN_NOTIFICATION_ID = 31231;
     NotificationCompat.Builder builder;
-
-
-    public void settings(View view) {
-        startActivity(new Intent(this, SettingsActivity.class));
-    }
 
 
     private static class MyBrowser extends WebViewClient {
@@ -88,9 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        // getting screen size and density
-        dpi = getResources().getDisplayMetrics().densityDpi;
-        ydpi = getResources().getDisplayMetrics().ydpi;
+        // getting screen size
         height = getResources().getDisplayMetrics().heightPixels;
         width = getResources().getDisplayMetrics().widthPixels;
 
@@ -104,13 +89,6 @@ public class MainActivity extends AppCompatActivity {
         fullSrnBtn = findViewById(R.id.fullScrnBtn);
         gradeBtn = findViewById(R.id.gradeBtn);
         msgBtn = findViewById(R.id.msgBtn);
-
-        // webView height
-//        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 180 * (ydpi / 283))));
-//        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - 160 * (ydpi / 283))));
-//        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - (dpToPixel(90) + getNavigationBarHeight())) ));
-        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (height - dpToPixel(95) )));
-
 
         // webView settings
         moodle.setWebViewClient(new MyBrowser());
@@ -126,57 +104,49 @@ public class MainActivity extends AppCompatActivity {
         gradeBtn.setOnClickListener(v -> moodle.loadUrl("https://my.uopeople.edu/mod/book/view.php?id=45606"));
         msgBtn.setOnClickListener(v -> moodle.loadUrl("my.uopeople.edu/message/index.php"));
 
-
         // creating notification channel for the app.
         createNotificationChannel();
 
         // set onClick listeners for media links
         setUoPeopleMediaLinks();
 
-
-
+        mainToolView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mainToolView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                bottom_nav_height = (int) (moodle.getHeight() - dpToPixel(80));
+                screen_height = (int) moodle.getHeight();
+                mainToolView.setY(bottom_nav_height);
+                moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (moodle.getHeight() - dpToPixel(80))));
+            }
+        });
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
 
-        int Y;
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                Y = (int) event.getRawY();
-                a = Y;
-                b = moodle.getHeight();
-
-                int[] ords = {0, 0};
-                mainToolView.getLocationOnScreen(ords);
-                int absoluteTop = ords[1];
-                int absoluteBottom = ords[1] + mainToolView.getHeight();
-                if (absoluteTop < Y && Y < absoluteBottom) {
-                    toolsTouched = true;
-                }
+                Y = (int) event.getY();
+                a = (int) mainToolView.getY();
+                Log.d("TAG", "onTouchEvent: " + Y + " : " + a);
                 break;
             case MotionEvent.ACTION_MOVE:
-                Y = (int) event.getRawY();
-                if (toolsTouched) {
-                    slideView(moodle, moodle.getLayoutParams().height, b - (a - Y));
+                if (Y > a) {
+                    int diff = a - Y;
+                    int pos = (int) event.getY() + diff;
+                    Log.d(TAG, pos +","+ bottom_nav_height +","+ screen_height + "," + mainToolView.getHeight() );
+                    if (pos < bottom_nav_height && pos > screen_height - mainToolView.getHeight()) {
+                        mainToolView.setY(pos);
+                        moodle.setBottom(pos);
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Y = (int) event.getRawY();
-                if (Y < a - 50 && !toolsViewRaised) {
-                    // raise toolsView
-                    slideView(moodle, moodle.getLayoutParams().height, 10);
-                    toolsViewRaised = true;
-                } else if (Y > a + 50 && toolsViewRaised) {
-                    // minimize toolsView
-                    setMoodleHeightToDefault();
-                    toolsViewRaised = false;
-                }
-                toolsTouched = false;
                 break;
         }
+
 
         return true;
     }
@@ -191,11 +161,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setMoodleHeightToDefault() {
-        Log.d("TAG", " " + ydpi);
 //        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
 //        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 160 * (ydpi / 283)));
 //        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( dpToPixel(90) + getNavigationBarHeight() ) ));
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( dpToPixel(95)  ) ));
+        slideView(moodle, moodle.getLayoutParams().height, (int) (height - (dpToPixel(95))));
     }
 
     private void enterFullSrn() {
@@ -215,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
         showSystemUI();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
+//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
     }
 
     private void hideSystemUI() {
@@ -382,6 +351,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void openGooglePlay(View view) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)));
+    }
+    
+    public void settings(View view) {
+        startActivity(new Intent(this, SettingsActivity.class));
     }
 
 

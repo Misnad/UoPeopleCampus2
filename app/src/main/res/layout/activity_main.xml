@@ -9,7 +9,7 @@
     <WebView
         android:id="@+id/main_web_view"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:elevation="10dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/main_web_view">
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/black">
 
 
         <ImageView
@@ -27,8 +28,7 @@
             android:layout_width="200dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/horizontal_bar"
             android:padding="0px"
             android:scaleType="centerCrop" />
@@ -280,7 +280,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="40dp">
 
                     <ImageView
                         android:id="@+id/media_facebook"
