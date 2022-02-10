@@ -1,5 +1,7 @@
 package com.misnadqasim.uopeoplecampus2;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationCompat;
@@ -14,13 +16,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,13 +53,15 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout mainToolView, bottomBar;
     Button homeBtn, dashBtn, fullSrnBtn, gradeBtn, msgBtn;
     int Y, a;   // for mainToolView raising mechanism
+    int X;
+    boolean toolsRaised, fullScreenMode;
 
     int width, height;
 
-    int bottom_nav_height;
+    int bottom_nav_height, moodleHeight;
     int screen_height;
 
-    String TAG = "a";
+    String TAG = "abc";
 
     String CHANNEL_ID = "1";
     int FULLSCREEN_NOTIFICATION_ID = 31231;
@@ -64,6 +75,24 @@ public class MainActivity extends AppCompatActivity {
             // TODO test below code
             return Uri.parse(url).getHost().equals("uopeople.edu");
         }
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    if (toolsRaised) {
+                        setMoodleHeightToDefault();
+                    } else if (moodle.canGoBack()) {
+                        moodle.goBack();
+                    } else {
+                        finish();
+                    }
+                    return true;
+            }
+
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 
@@ -117,9 +146,96 @@ public class MainActivity extends AppCompatActivity {
                 bottom_nav_height = (int) (moodle.getHeight() - dpToPixel(80));
                 screen_height = (int) moodle.getHeight();
                 mainToolView.setY(bottom_nav_height);
-                moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (moodle.getHeight() - dpToPixel(80))));
+                moodleHeight = (int) (moodle.getHeight() - dpToPixel(80));
+                moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, moodleHeight));
             }
         });
+
+        moodle.setOnTouchListener((v, event) -> {
+            if (!fullScreenMode)
+                setMoodleHeightToDefault();
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    X = (int) event.getX();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if ((int) event.getX() == X) {
+                        admobShowAd();
+                    }
+                    break;
+            }
+            return false;
+        });
+
+        if (sharedPreferences.getBoolean(SettingsActivity.showAdKey, true)) {
+            admobInitialize();
+            admobLoadAd();
+        }
+    }
+
+    private void admobInitialize() {
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+    }
+
+    private InterstitialAd mInterstitialAd;
+
+    private void admobLoadAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        mInterstitialAd = interstitialAd;
+                        admobCallback();
+                        Log.i(TAG, "onAdLoaded");
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        Log.i(TAG, loadAdError.getMessage());
+                        mInterstitialAd = null;
+                    }
+                });
+    }
+
+    private void admobCallback() {
+        if (mInterstitialAd != null) {
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    // Called when fullscreen content is dismissed.
+                    Log.d("TAG", "The ad was dismissed.");
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(AdError adError) {
+                    // Called when fullscreen content failed to show.
+                    Log.d("TAG", "The ad failed to show.");
+                }
+
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    // Called when fullscreen content is shown.
+                    // Make sure to set your reference to null so you don't
+                    // show it a second time.
+                    mInterstitialAd = null;
+                    Log.d("TAG", "The ad was shown.");
+                    admobLoadAd();
+                }
+            });
+        }
+    }
+
+    private void admobShowAd() {
+        if (mInterstitialAd != null && sharedPreferences.getBoolean(SettingsActivity.showAdKey, true)) {
+            mInterstitialAd.show(this);
+        } else {
+            Log.d("TAG", "The interstitial ad wasn't ready yet.");
+        }
     }
 
     @Override
@@ -130,50 +246,49 @@ public class MainActivity extends AppCompatActivity {
             case MotionEvent.ACTION_DOWN:
                 Y = (int) event.getY();
                 a = (int) mainToolView.getY();
-                Log.d("TAG", "onTouchEvent: " + Y + " : " + a);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (Y > a) {
                     int diff = a - Y;
                     int pos = (int) event.getY() + diff;
-                    Log.d(TAG, pos +","+ bottom_nav_height +","+ screen_height + "," + mainToolView.getHeight() );
                     if (pos < bottom_nav_height && pos > screen_height - mainToolView.getHeight()) {
                         mainToolView.setY(pos);
                         moodle.setBottom(pos);
+                        toolsRaised = true;
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                if (event.getRawY() < bottom_nav_height - 80) {
+                    slideY(mainToolView, (int) mainToolView.getY(), screen_height - mainToolView.getHeight());
+                    moodle.setBottom(screen_height - mainToolView.getHeight());
+                } else {
+                    slideY(mainToolView, (int) mainToolView.getY(), bottom_nav_height);
+                    moodle.setBottom(moodleHeight);
+                }
                 break;
         }
-
-
         return true;
     }
 
-    private int getNavigationBarHeight() {
-        Resources resources = this.getResources();
-        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return resources.getDimensionPixelSize(resourceId);
-        }
-        return 0;
-    }
-
     private void setMoodleHeightToDefault() {
-//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
-//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 160 * (ydpi / 283)));
-//        slideView(moodle, moodle.getLayoutParams().height, (int) (height - ( dpToPixel(90) + getNavigationBarHeight() ) ));
-        slideView(moodle, moodle.getLayoutParams().height, (int) (height - (dpToPixel(95))));
+        slideY(mainToolView, (int) mainToolView.getY(), bottom_nav_height);
+        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, moodleHeight));
+        toolsRaised = false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.R)
     private void enterFullSrn() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);   //Set full
         hideSystemUI();
-        slideView(moodle, moodle.getLayoutParams().height, getResources().getDisplayMetrics().heightPixels + 50);
+        mainToolView.setVisibility(View.INVISIBLE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getCurrentWindowMetrics();
+        moodle.setLayoutParams(new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, displayMetrics.heightPixels));
         makeNotification();
 
         Toast.makeText(this, "Click the ongoing notification to exit full screen.", Toast.LENGTH_LONG).show();
+        fullScreenMode = true;
     }
 
     private void exitFullSrn() {
@@ -184,6 +299,8 @@ public class MainActivity extends AppCompatActivity {
 
         showSystemUI();
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        mainToolView.setVisibility(View.VISIBLE);
+        fullScreenMode = false;
 //        slideView(moodle, moodle.getLayoutParams().height, (int) (height - 180 * (ydpi / 283)));
     }
 
@@ -212,7 +329,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void slideView(View view, int currentHeight, int newHeight) {
-
         ValueAnimator slideAnimator = ValueAnimator
                 .ofInt(currentHeight, newHeight)
                 .setDuration(500);
@@ -223,6 +339,28 @@ public class MainActivity extends AppCompatActivity {
         slideAnimator.addUpdateListener(animation1 -> {
             Integer value = (Integer) animation1.getAnimatedValue();
             view.getLayoutParams().height = value;
+            view.requestLayout();
+        });
+
+        /*  We use an animationSet to play the animation  */
+
+        AnimatorSet animationSet = new AnimatorSet();
+        animationSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        animationSet.play(slideAnimator);
+        animationSet.start();
+    }
+
+    public static void slideY(View view, int currentY, int newY) {
+        ValueAnimator slideAnimator = ValueAnimator
+                .ofInt(currentY, newY)
+                .setDuration(500);
+
+        /* We use an update listener which listens to each tick
+         * and manually updates the height of the view  */
+
+        slideAnimator.addUpdateListener(animation -> {
+            Integer value = (Integer) animation.getAnimatedValue();
+            view.setY(value);
             view.requestLayout();
         });
 
@@ -352,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
     public void openGooglePlay(View view) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)));
     }
-    
+
     public void settings(View view) {
         startActivity(new Intent(this, SettingsActivity.class));
     }

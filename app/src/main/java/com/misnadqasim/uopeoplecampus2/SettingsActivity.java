@@ -18,6 +18,8 @@ public class SettingsActivity extends AppCompatActivity {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch adSwitch;
 
+    public static final String showAdKey = "SHOW_AD";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void showAd(boolean val) {
-        pref.edit().putBoolean("SHOW_AD", val).apply();
+        pref.edit().putBoolean(showAdKey, val).apply();
     }
 
     private void alertDialog() {
