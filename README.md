@@ -36,7 +36,7 @@ Or download apk from [here](https://github.com/Misnad/UoPeopleCampus2/releases/d
 
 - [x] WebView implementation
 - [ ] Note taking activity
-- [ ] Fix the slider
+- [x] Fix the slider
 - [ ] Cleanup and breakdown MainActivity.java
 
 
