@@ -14,8 +14,6 @@ For any bug reports or suggestions, please open an issue.
   <img height="100px" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/>
 </a>
 
-Or download apk from [here](https://github.com/Misnad/UoPeopleCampus2/releases/download/v1.0.0/app-debug.apk).
-
 ## Features
 
 - Display the UoPeople moodle site in a web-view
